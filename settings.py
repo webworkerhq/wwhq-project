@@ -1,4 +1,22 @@
 # Django settings for myproject project.
+import os
+import django
+
+# For setting relative paths. See: http://tinyurl.com/adsa3k
+# Path of Django framework files (no trailing /):
+DJANGO_ROOT = os.path.dirname(os.path.realpath(django.__file__))
+# Path of this "site" (no trailing /):
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+BUILT_IN_MESSAGES_FRAMEWORK = False
+try:
+    import django.contrib.messages.context_processors
+    BUILT_IN_MESSAGES_FRAMEWORK = True
+except ImportError:
+    pass
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -67,28 +85,17 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth', #for user template var
-    #'django.core.context_processors.debug',
-    #'django.core.context_processors.i18n',
-    'django.core.context_processors.media', #for MEDIA_URL template var
-    'django.core.context_processors.request', #includes request in RequestContext
-)
+
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware'
 )
 
 ROOT_URLCONF = 'myproject.urls'
-
-AUTHENTICATION_BACKENDS = (
-    'django_rpx_plus.backends.RpxBackend', 
-    'django.contrib.auth.backends.ModelBackend', #default django auth
-)
 
 TEMPLATE_DIRS = (
     '/home/fsanchez3/webapps/website/myproject/django_rpx_plus/templates',
@@ -105,15 +112,51 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'myproject.tagging',
-    'myproject.django_rpx_plus',
     'myproject.commercials',
     'myproject.home_page',
     'south',
+    'myproject.django_rpx_plus',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admindocs',
 )
+
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.auth', #for user template var
+    #'django.core.context_processors.debug',
+    #'django.core.context_processors.i18n',
+    'django.core.context_processors.media', #for MEDIA_URL template var
+    'django.core.context_processors.request', #includes request in RequestContext
+)
+
+
+AUTHENTICATION_BACKENDS = (
+    'myproject.django_rpx_plus.backends.RpxBackend', 
+    'django.contrib.auth.backends.ModelBackend', #default django auth
+)
+
+# Here are some settings related to auth urls. django has default values for them
+# as specified on page: http://docs.djangoproject.com/en/dev/ref/settings/. You
+# can override them if you like.
+#account.
+#LOGIN_REDIRECT_URL = '' #default: '/accounts/profile/'
+LOGIN_URL = '/login/' #default: '/accounts/login/'
+#LOGOUT_URL = '' #default: '/accounts/logout/'
+
+########################################
+# django messages framework settings:  #
+########################################
+
+#First uses CookieStorage for all messages, falling back to using
+#SessionStorage for the messages that could not fit in a single cookie.
+
+if BUILT_IN_MESSAGES_FRAMEWORK:
+    MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+else:
+    MESSAGE_STORAGE = 'django_messages_framework.storage.fallback.FallbackStorage'
 
 ############################
 #django_rpx_plus settings: #
